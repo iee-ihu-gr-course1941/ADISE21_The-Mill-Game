@@ -13,8 +13,6 @@ CREATE TABLE `board` (
  PRIMARY KEY (`x`,`y`) )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `boardempty`;
-
 CREATE TABLE `boardempty` (
 `x` varchar(1) NOT NULL, 
 `y` tinyint(1) NOT NULL,
@@ -26,6 +24,7 @@ CREATE TABLE `players` (
 `username` varchar(20) DEFAULT NULL, 
 `piece_color` enum('B','W') NOT NULL,
 `token` varchar(40) DEFAULT NULL,
+`piece_number` int(9) DEFAULT 9,
 PRIMARY KEY (`piece_color`) )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `game_status` (
@@ -34,9 +33,9 @@ CREATE TABLE `game_status` (
 `result` enum('B','W','D') DEFAULT NULL,
 `last_change` timestamp NULL DEFAULT NULL )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `board` (`x`, `y`, `piece_color`, `boardslot`) VALUES 
+INSERT INTO board  VALUES 
 ('A',1,NULL,'T'),
-('A',2,NULL,'F');
+('A',2,NULL,'F'),
 ('A',3,NULL,'F'),
 ('A',4,NULL,'T'),
 ('A',5,NULL,'F'),
@@ -87,9 +86,9 @@ INSERT INTO `board` (`x`, `y`, `piece_color`, `boardslot`) VALUES
 
 
 
-INSERT INTO `boardempty` (`x`, `y`, `piece_color`, `boardslot`) VALUES 
+INSERT INTO boardempty VALUES 
 ('A',1,NULL,'T'),
-('A',2,NULL,'F');
+('A',2,NULL,'F'),
 ('A',3,NULL,'F'),
 ('A',4,NULL,'T'),
 ('A',5,NULL,'F'),
@@ -137,3 +136,31 @@ INSERT INTO `boardempty` (`x`, `y`, `piece_color`, `boardslot`) VALUES
 ('G',5,NULL,'F'),
 ('G',6,NULL,'F'),
 ('G',7,NULL,'T');
+
+insert into players VALUES 
+(Null,'W',null,9),
+(Null,'B',null,9);
+
+DELIMITER $$ CREATE TRIGGER game_status_update BEFORE UPDATE ON game_status FOR EACH ROW BEGIN SET NEW.last_change = NOW(); END$$ DELIMITER ;
+
+DELIMITER $$ CREATE PROCEDURE clean_board() 
+BEGIN REPLACE INTO board SELECT * FROM boardempty; 
+update `players` set username=null, token=null;
+update`game_status` set `status`='not active', `p_turn`=null, `result`=null;
+END$$ DELIMITER ;
+
+
+
+DELIMITER $$ CREATE PROCEDURE piece_placement()
+
+
+
+
+END$$ DELIMITER;
+
+
+
+DELIMITER $$ CREATE PROCEDURE piece_movent()
+
+
+END$$ DELIMITER;
