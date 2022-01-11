@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `board`;
 DROP TABLE IF EXISTS `boardempty`;
 DROP TABLE IF EXISTS `game_status`;
 DROP TABLE IF EXISTS `players`;
-
+DROP PROCEDURE IF EXISTS
 
 CREATE TABLE `board` ( 
 `x` varchar(1) NOT NULL, 
@@ -137,30 +137,48 @@ INSERT INTO boardempty VALUES
 ('G',6,NULL,'F'),
 ('G',7,NULL,'T');
 
-insert into players VALUES 
-(Null,'W',null,9),
-(Null,'B',null,9);
 
-DELIMITER $$ CREATE TRIGGER game_status_update BEFORE UPDATE ON game_status FOR EACH ROW BEGIN SET NEW.last_change = NOW(); END$$ DELIMITER ;
+DELIMITER $$ 
 
-DELIMITER $$ CREATE PROCEDURE clean_board() 
-BEGIN REPLACE INTO board SELECT * FROM boardempty; 
-update `players` set username=null, token=null;
-update`game_status` set `status`='not active', `p_turn`=null, `result`=null;
+CREATE TRIGGER game_status_update BEFORE UPDATE ON 
+game_status FOR EACH ROW BEGIN SET
+NEW.last_change = NOW(); 
 END$$ DELIMITER ;
 
+DELIMITER $$ 
+
+CREATE PROCEDURE clean_board() 
+BEGIN REPLACE INTO board SELECT * FROM boardempty; 
+update `players` set username=null, token=null, set piece_number=9;
+update`game_status` set `status`='not active', `p_turn`=null, `result`=null;
+END$$ 
+DELIMITER ;
 
 
-DELIMITER $$ CREATE PROCEDURE piece_placement()
+
+DELIMITER	$$
+
+CREATE PROCEDURE piece_placement(x1 tinyint,y1 tinyint, pcolor char)
+BEGIN
+UPDATE board
+SET piece_color = pcolor;
+WHERE x = x1 AND y = y1;
+END$$
+
+DELIMITER ;
 
 
 
+DELIMITER $$ 
 
-END$$ DELIMITER;
+CREATE PROCEDURE piece_movement(x1 tinyint, y1 tinyint, x2 tinyint, y2 tinyint, pcolor char)
+BEGIN
+UPDATE board
+set piece_color = null
+where x= x1 AND y = y1;
 
+update board
+set piece_color = pcolor
+where x = x2 AND y = y2;
 
-
-DELIMITER $$ CREATE PROCEDURE piece_movent()
-
-
-END$$ DELIMITER;
+END$$ DELIMITER ;
