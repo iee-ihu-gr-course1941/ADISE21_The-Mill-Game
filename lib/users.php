@@ -80,4 +80,9 @@ function current_color($token) {
 	return(null);
 }
 
+
+
+
+
+
 ?>
