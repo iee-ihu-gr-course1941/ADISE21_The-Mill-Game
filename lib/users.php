@@ -80,7 +80,36 @@ function current_color($token) {
 	return(null);
 }
 
+function current_piececolor($token,$x2,$y2) {
+	global $mysqli;
+	if($token==null) {return(null);}
+	$sql = 'select piece_color from board where X=? and Y=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('ss',$x2,$y2);
+	$st->execute();
+	$res = $st->get_result();
+	if($row=$res->fetch_assoc()) {
+		return($row['piece_color']);
+	}
+	return(null);
+}
 
+
+
+function current_boardslot($token, $x2, $y2) {
+	
+	global $mysqli;
+	if($token==null) {return(null);}
+	$sql = 'select boardslot from board where X=? and Y=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('s',$token);
+	$st->execute();
+	$res = $st->get_result();
+	if($row=$res->fetch_assoc()) {
+		return($row['boardslot']);
+	}
+	return(null);
+}
 function currentpieces($token) {
 	global $mysqli;
 	if($token==null) {return(null);}
