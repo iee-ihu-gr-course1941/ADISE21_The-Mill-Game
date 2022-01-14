@@ -298,8 +298,16 @@ function piece_placement($x,$y,$piece_color,$input){
 	
 }
 
-function show_piecenumber($pic){
+function show_piecenumber($pic, $input){
 	global $mysqli;
+
+	$token = $input['token'];
+
+	if($token ==null || $token==''){
+		print("you are not a user");
+		exit;
+	}
+
 	$sql = 'select piece_number from players where piece_color=? ';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('s',$pic);
@@ -342,8 +350,12 @@ function removepiece($x,$y,$piece_color,$input){
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('ii',$x,$y);
 	$st->execute();
-		
-	//na alazei o arithmos pionion
+	
+	
+	$sql = ' update players set piece_number = piece_number-1';
+	$st = $mysqli->prepare($sql);
+	$st->execute();
+	
 }
 
 
