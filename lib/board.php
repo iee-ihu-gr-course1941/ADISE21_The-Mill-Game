@@ -118,103 +118,160 @@ function add_valid_moves_to_piece(&$board,$b,$x,$y) {
 	$count = currentpieces($token);
 	if($board[$x][$y]['piece_color']==$b) {
 
-		if($count >= 2){
-		switch($board[$x]){
-				case 'A': 
+		if($count >= 3){
+		switch($x){
+				case '1': 
 					switch($y){
 
-						case '1': $number_of_moves+=move_a1 ($board,$b,$x,$y);break;
+						case '1': $number_of_moves+=move_outercirle ($board,$b,$x,$y);break;
 						case '2': break;
 						case '3': break;
-						case '4': $number_of_moves+=move_a4 ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_outercrossroad ($board,$b,$x,$y);break;
 						case '5': break;
 						case '6': break;
-						case '7': $number_of_moves+=move_a7 ($board,$b,$x,$y);break;
+						case '7': $number_of_moves+=move_outercirle ($board,$b,$x,$y);break;
 					}	
 						break;
 					switch($y){
-				case 'B':
+				case '2':
 						case '1': break;
-						case '2': $number_of_moves+=move_b2 ($board,$b,$x,$y);break;
+						case '2': $number_of_moves+=move_semicirle ($board,$b,$x,$y);break;
 						case '3': break;
-						case '4': $number_of_moves+=move_b4 ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_crossroad ($board,$b,$x,$y);break;
 						case '5': break;
-						case '6': $number_of_moves+=move_b6 ($board,$b,$x,$y);break;
+						case '6': $number_of_moves+=move_semicirle ($board,$b,$x,$y);break;
 						case '7': break;
 					}	
 						break;
 				switch($y){
-				case 'C':
+				case '3':
 						case '1': break;
 						case '2': break;
-						case '3': $number_of_moves+=move_c3 ($board,$b,$x,$y);break;
-						case '4': $number_of_moves+=move_c4 ($board,$b,$x,$y);break;
-						case '5': $number_of_moves+=move_c5 ($board,$b,$x,$y);break;
+						case '3': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
+						case '5': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
 						case '6': break;
 						case '7': break;
 					}	
 						break;
 				switch($y){
-				case 'D':
-						case '1': $number_of_moves+=move_d1 ($board,$b,$x,$y);break;
-						case '2': $number_of_moves+=move_d2 ($board,$b,$x,$y);break;
-						case '3': $number_of_moves+=move_d3 ($board,$b,$x,$y);break;
+				case '4':
+						case '1': $number_of_moves+=move_outercrossroad ($board,$b,$x,$y);break;
+						case '2': $number_of_moves+=move_crossroad ($board,$b,$x,$y);break;
+						case '3': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
 						case '4': break;
-						case '5': $number_of_moves+=move_d5 ($board,$b,$x,$y);break;
-						case '6': $number_of_moves+=move_d6 ($board,$b,$x,$y);break;
-						case '7': $number_of_moves+=move_d7 ($board,$b,$x,$y);break;
+						case '5': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
+						case '6': $number_of_moves+=move_crossroad ($board,$b,$x,$y);break;
+						case '7': $number_of_moves+=move_outercrossroad ($board,$b,$x,$y);break;
 					}	
 						break;
 				switch($y){
-				case 'E':
+				case '5':
 						case '1': break;
 						case '2': break;
-						case '3': $number_of_moves+=move_e3 ($board,$b,$x,$y);break;
-						case '4': $number_of_moves+=move_e4 ($board,$b,$x,$y);break;
-						case '5': $number_of_moves+=move_e5 ($board,$b,$x,$y);break;
+						case '3': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
+						case '5': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
 						case '6': break;
 						case '7': break;
 					}	
 						break;
 
 				switch($y){
-				case 'F':
+				case '6':
 						case '1': break;
-						case '2': $number_of_moves+=move_f2 ($board,$b,$x,$y);break;
+						case '2': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
 						case '3': break;
-						case '4': $number_of_moves+=move_f4 ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_crossroad ($board,$b,$x,$y);break;
 						case '5': break;
-						case '6': $number_of_moves+=move_f6 ($board,$b,$x,$y);break;
+						case '6': $number_of_moves+=move_innercirle ($board,$b,$x,$y);break;
 						case '7': break;
 					}	
 						break;
 				switch($y){
-				case 'G':
-						case '1': $number_of_moves+=move_g1 ($board,$b,$x,$y);break;
+				case '7':
+						case '1': $number_of_moves+=move_outercirle ($board,$b,$x,$y);break;
 						case '2': break;
 						case '3': break;
-						case '4': $number_of_moves+=move_g4 ($board,$b,$x,$y);break;
+						case '4': $number_of_moves+=move_outercrossroad ($board,$b,$x,$y);break;
 						case '5': break;
 						case '6': break;
-						case '7': $number_of_moves+=move_g7 ($board,$b,$x,$y);break;
+						case '7': $number_of_moves+=move_outercirle ($board,$b,$x,$y);break;
 					}	
 						break;
 			
 		}
+		//else flying moves
 	}
 	} 
 	return($number_of_moves);
 
 
 
-function move_a1($board,$b,$x,$y){
+function move_outercirle($board,$b,$x,$y){
 
-	if($x=$x && $y=$y){
+	$m = [
+		[3,0],
+		[-3,0],
+		[0,3],
+		[0,-3]
+	];	
+	return(pawnmoves($board,$b,$x,$y,$m));
 	
-	}
-	//den prepei na einai i thesi idia me tin proigoumeni alliws error
-
 }
+
+
+function move_semicirle($board,$b,$x,$y){
+
+	$m = [
+		[2,0],
+		[-2,0],
+		[0,2],
+		[0,-2]
+	];	
+	return(pawnmoves($board,$b,$x,$y,$m));
+	
+}
+
+function move_innercirle($board,$b,$x,$y){
+
+	$m = [
+		[1,0],
+		[-1,0],
+		[0,1],
+		[0,-1]
+	];	
+	return(pawnmoves($board,$b,$x,$y,$m));
+	
+}
+
+function move_innercrossroad($board,$b,$x,$y){
+
+	$m = [
+		[2,0],
+		[-2,0],
+		[0,1],
+		[0,-1]
+	];		
+	return(pawnmoves($board,$b,$x,$y,$m));
+	
+}
+
+function move_outercrossroad($board,$b,$x,$y){
+
+	$m = [
+		[1,0],
+		[-1,0],
+		[0,3],
+		[0,-3]
+	];		
+	return(pawnmoves($board,$b,$x,$y,$m));
+	
+}
+
+
+
+
 
 function piece_placement($x,$y,$piece_color,$input){
 	global $mysqli;
@@ -254,11 +311,37 @@ function do_move($x,$y,$x2,$y2) {
 	global $mysqli;
 	$sql = 'call `piece_movement`(?,?,?,?,?);';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('iiiii',$x,$y,$x2,$y2 ); //ali mia parametro
+	$st->bind_param('iiiii',$x,$y,$x2,$y2,$pcolor); 
 	$st->execute();
 
 	header('Content-type: application/json');
 	print json_encode(read_board(), JSON_PRETTY_PRINT);
+}
+
+function pawnmoves(&$board,$b,$x,$y,$m) {
+	$moves=[];
+	foreach($m as $k=>$t) {
+		$x2=$x+$t[0];
+		$y2=$y+$t[1];
+		if( $x2>=1 && $x2<=7 && $y2>=1 && $y2<=7 &&
+			$board[$x2][$y2]['piece_color'] !=$b ) {
+			$move=['x'=>$x2, 'y'=>$y2];
+			$moves[]=$move;
+		}
+	}
+	$board[$x][$y]['moves'] = $moves;
+	return(sizeof($moves));
+}
+
+
+function removepiece($x,$y,$piece_color,$input){
+	global $mysqli;
+	$sql = ' update board set piece_color=null where X=? and Y=? ';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('ii',$x,$y);
+	$st->execute();
+		
+	//na alazei o arithmos pionion
 }
 
 
