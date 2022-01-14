@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `board`;
 DROP TABLE IF EXISTS `boardempty`;
 DROP TABLE IF EXISTS `game_status`;

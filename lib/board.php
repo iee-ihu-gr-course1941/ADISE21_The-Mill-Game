@@ -1,8 +1,10 @@
 <?php
 
-function show_board() {
+function show_board($input) {
     global $mysqli;
 	
+	if($input==null){
+		return null;}
 	$sql = 'select * from board';
 	$st = $mysqli->prepare($sql);
 
@@ -206,7 +208,7 @@ function add_valid_moves_to_piece(&$board,$b,$x,$y) {
 	} 
 	return($number_of_moves);
 
-
+}
 
 function move_outercirle($board,$b,$x,$y){
 
@@ -277,13 +279,13 @@ function piece_placement($x,$y,$piece_color,$input){
 	global $mysqli;
 	$sql = 'update board set piece_color=? where X=? and Y=? ';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('sss',$piece_color,$x,$y);
+	$st->bind_param('iii',$piece_color,$x,$y);
 	$st->execute();
 	
 	$username=$input['username'];
 	$sql = ' update players set playerNumber = playernumber + 1 where username=? ';
 	$st3 = $mysqli->prepare($sql);
-	$st3->bind_param('s',$username);
+	$st3->bind_param('i',$username);
 	$st3->execute();
 	
 	$sql = 'call `piece_placement`(?,?,?);';
@@ -343,45 +345,6 @@ function removepiece($x,$y,$piece_color,$input){
 		
 	//na alazei o arithmos pionion
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ?>
