@@ -32,7 +32,7 @@ switch ($r=array_shift($request)) {
                             break;
 			}
             break;
-    case 'status': 
+    case 'status':
 			if(sizeof($request)==0) {handle_status($method);}
 			else {header("HTTP/1.1 404 Not Found");}
 			break;

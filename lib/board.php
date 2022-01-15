@@ -11,8 +11,11 @@ function show_board($input) {
 	$st->execute();
 	$res = $st->get_result();
 
-	header('Content-type: application/json');
-	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+	//header('Content-type: application/json');
+	//print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+
+	check_triple(1,1,'W','');
+	print_r(convert_board());
 }
 
 
@@ -34,7 +37,8 @@ function read_board() {
 }
 
 
-function convert_board(&$orig_board) {
+function convert_board() {
+	$orig_board = read_board();
 	$board=[];
 	foreach($orig_board as $i=>&$row) {
 		$board[$row['x']][$row['y']] = &$row;
@@ -96,8 +100,8 @@ function move_piece($x,$y,$x2,$y2,$token) {
 		print json_encode(['errormesg'=>"It is not your turn."]);
 		exit;
 	}
-	$orig_board=read_board();
-	$board=convert_board($orig_board);
+	
+	$board=convert_board();
 	$n = add_valid_moves_to_piece($board,$color,$x,$y);
 	if($n==0) {
 		header("HTTP/1.1 400 Bad Request");
@@ -352,11 +356,51 @@ function removepiece($x,$y,$piece_color,$input){
 	$st->execute();
 	
 	
-	$sql = ' update players set piece_number = piece_number-1';
+	$sql = ' update players set piece_number = piece_number-1 where piece_color=?';
 	$st = $mysqli->prepare($sql);
+	$st->bind_param('i',$piece_color);
 	$st->execute();
 	
+
+	//change turn
 }
+
+
+function check_triple($x, $y, $piece_color,$input){
+	$counter = 0;
+
+	$board = convert_board();
+
+
+ 
+	for ($i = 1; $i < 8; $i++){
+		
+		for ($j = 1; $j < 8; $j++){
+			
+			if($board[$i][$j][$piece_color] = "W"){	
+				
+				print($piece_color);
+				$counter = $counter +1;
+					if($counter = 3){
+					print("counter Entered");
+						removepiece($x,$y,$piece_color,$input);
+					}
+			}
+
+			
+
+
+
+		}
+
+		$counter = 0;
+
+
+	}  
+
+}
+
+
 
 
 ?>
