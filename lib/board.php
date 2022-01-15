@@ -29,8 +29,8 @@ function reset_board() {
 
 function read_board() {
 	global $mysqli;
-	$sql = 'select x,y,piece_color
-	from board left join players on board.piece_color=piece_color';
+	$sql = 'select * from board';
+	//x,y,piece_color from board left join players on board.piece_color=piece_color';
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
