@@ -11,8 +11,8 @@ function show_board($input) {
 	$st->execute();
 	$res = $st->get_result();
 
-	//header('Content-type: application/json');
-	//print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+	header('Content-type: application/json');
+	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 
 	check_triple(1,1,'W','');
 	print_r(convert_board());
@@ -29,7 +29,8 @@ function reset_board() {
 
 function read_board() {
 	global $mysqli;
-	$sql = 'select * from board';
+	$sql = 'select x,y,piece_color
+	from board left join players on board.piece_color=piece_color';
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
