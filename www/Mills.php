@@ -26,7 +26,7 @@ switch ($r=array_shift($request)) {
             case '':
             case null: handle_board($method,$input);
                         break;
-            case 'piece': handle_piece($method, $request[0],$request[1],$request[2],$request[3],$input);
+            case 'piece': handle_piece($method, $request[0],$request[1], $request[2],$request[3],$input);
                         break;
             case 'removepiece': handle_removepiece($method, $request[0],$request[1],$input);
                         break;
@@ -64,7 +64,7 @@ function handle_board($method,$input) {
             if($method == 'GET')
                 show_piece($x,$y);
             elseif($method == "PUT")
-                piece_placement($x, $y,$piece_color,$input);
+                piece_placement($x, $y,$input);
             
             else    
             header('HTTP/1.1 405 Method Not Allowed');

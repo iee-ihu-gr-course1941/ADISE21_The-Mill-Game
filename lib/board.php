@@ -3,8 +3,9 @@
 function show_board($input) {
     global $mysqli;
 	
-	if($input==null){
-		return null;}
+	if($input==null)
+		return null;
+
 	$sql = 'select * from board';
 	$st = $mysqli->prepare($sql);
 
@@ -278,7 +279,7 @@ function move_outercrossroad($board,$b,$x,$y){
 
 
 
-function piece_placement($x,$y,$piece_color,$input){
+function piece_placement($x,$y,$input){
 	global $mysqli;
 
 	
