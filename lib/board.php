@@ -363,7 +363,7 @@ function removepiece($x,$y,$piece_color,$input){
 
 	$sql = 'call `turnupdate`(?);';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('i',$pcolor); 
+	$st->bind_param('i',$piece_color); 
 	$st->execute();
 }
 

@@ -32,7 +32,7 @@ switch ($r=array_shift($request)) {
                         break;
             case 'counterpiece': handle_counterpiece($method, $request[0]);            
                         break;
-            case 'placepiece' : handle_placepiece();            
+            case 'placepiece' : handle_placepiece($method ,$x, $y,$piece_color,$input);            
                         
 	    default: header("HTTP/1.1 404 Not Found");
                             break;
