@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `players`;
 DROP PROCEDURE IF EXISTS clean_board;
 DROP PROCEDURE IF EXISTS piece_placement;
 DROP PROCEDURE IF EXISTS piece_movement;
+DROP PROCEDURE IF EXISTS turnupdate;
 DROP TRIGGER if EXISTS game_status_update;
 
 
@@ -37,13 +38,13 @@ CREATE TABLE `game_status` (
 `last_change` timestamp NULL DEFAULT NULL )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO board  VALUES 
-(1,1,'W',TRUE),
+(1,1,NULL,TRUE),
 (1,2,NULL,FALSE),
 (1,3,NULL,FALSE),
-(1,4,'W',TRUE),
+(1,4,NULL,TRUE),
 (1,5,NULL,FALSE),
 (1,6,NULL,FALSE),
-(1,7,'W',TRUE),
+(1,7,NULL,TRUE),
 (2,1,NULL,FALSE),
 (2,2,NULL,TRUE),
 (2,3,NULL,FALSE),
@@ -160,13 +161,15 @@ DELIMITER ;
 
 
 DELIMITER	$$
-CREATE PROCEDURE piece_placement(pcolor char, x1 TINYINT, y1 TINYINT)
+CREATE PROCEDURE piece_placement(x1 TINYINT, y1 TINYINT)
 BEGIN
-UPDATE board
-SET piece_color	= pcolor
-WHERE x = x1 AND y = y1;
 
-UPDATE game_status set p_turn=if(p_color='W','B','W');
+select piece_color,boardslot from board where X= x1 and Y= y1 and boardslot = 1;
+UPDATE board
+SET piece_color	= piece_color
+WHERE x = x1 AND y = y1 and boardslot = 1 ;
+
+UPDATE game_status set p_turn=if(piece_color='W','B','W');
 
 END$$
 
@@ -176,18 +179,35 @@ DELIMITER ;
 
 DELIMITER $$ 
 
-CREATE PROCEDURE piece_movement(x1 tinyint, y1 tinyint, x2 tinyint, y2 tinyint, pcolor char)
+CREATE PROCEDURE piece_movement(x1 tinyint, y1 tinyint, x2 tinyint, y2 tinyint )
 BEGIN
-UPDATE board
-set piece_color = null
-where x= x1 AND y = y1;
+
+select piece_color,boardslot from board where X= x1 and Y= y1 and boardslot = 1;
 
 UPDATE board
-set piece_color = pcolor
-where x = x2 AND y = y2;
-UPDATE game_status set p_turn=if(p_color='W','B','W');
+set piece_color = piece_color
+where x = x2 AND y = y2 and boardslot = 1;
+
+UPDATE board
+set piece_color = null
+where x= x1 AND y = y1 and boardslot = 1;
+
+UPDATE game_status set p_turn=if(piece_color='W','B','W');
 
 
 END$$ 
 
 DELIMITER ;
+
+DELIMITER $$ 
+
+CREATE PROCEDURE turnupdate(pcolor char)
+BEGIN
+UPDATE game_status
+set p_turn = if(pcolor='W','B','W');
+
+END$$ 
+
+DELIMITER ;
+
+

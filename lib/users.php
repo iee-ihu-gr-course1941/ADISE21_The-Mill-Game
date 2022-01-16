@@ -100,9 +100,9 @@ function current_boardslot($token, $x2, $y2) {
 	
 	global $mysqli;
 	if($token==null) {return(null);}
-	$sql = 'select boardslot from board where X=? and Y=?';
+	$sql = 'select boardslot from board where X=? and Y=? and boardslot=1';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('s',$token);
+	$st->bind_param('ssd',$x2,$y2,$token);
 	$st->execute();
 	$res = $st->get_result();
 	if($row=$res->fetch_assoc()) {

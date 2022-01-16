@@ -14,23 +14,21 @@ function show_board($input) {
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 
-	check_triple(1,1,'W','');
-	print_r(convert_board());
 }
 
 
-function reset_board() {
+function reset_board($input) {
 	global $mysqli;
 	
 	$sql = 'call clean_board()';
 	$mysqli->query($sql);
-	show_board();
+	show_board($input);
 }
 
 function read_board() {
 	global $mysqli;
 	$sql = 'select * from board';
-	//x,y,piece_color from board left join players on board.piece_color=piece_color';
+	//x,y,board.piece_color from board left join players on board.piece_color=players.piece_color'
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
@@ -293,9 +291,9 @@ function piece_placement($x,$y,$piece_color,$input){
 	$st3->bind_param('i',$username);
 	$st3->execute();
 	
-	$sql = 'call `piece_placement`(?,?,?);';
+	$sql = 'call `piece_placement`(?,?);';
 	$st2 = $mysqli->prepare($sql);
-	$st2->bind_param('iii',$x,$y);
+	$st2->bind_param('ii',$x,$y);
 	$st2->execute();
 	
 	header('Content-type: application/json');
@@ -324,9 +322,9 @@ function show_piecenumber($pic, $input){
 
 function do_move($x,$y,$x2,$y2) {
 	global $mysqli;
-	$sql = 'call `piece_movement`(?,?,?,?,?);';
+	$sql = 'call `piece_movement`(?,?,?,?);';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('iiiii',$x,$y,$x2,$y2,$pcolor); 
+	$st->bind_param('iiii',$x,$y,$x2,$y2); 
 	$st->execute();
 
 	header('Content-type: application/json');
@@ -363,7 +361,10 @@ function removepiece($x,$y,$piece_color,$input){
 	$st->execute();
 	
 
-	//change turn
+	$sql = 'call `turnupdate`(?);';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('i',$pcolor); 
+	$st->execute();
 }
 
 
@@ -371,37 +372,50 @@ function check_triple($x, $y, $piece_color,$input){
 	$counter = 0;
 
 	$board = convert_board();
-
-
- 
+	
 	for ($i = 1; $i < 8; $i++){
 		
 		for ($j = 1; $j < 8; $j++){
 			
-			if($board[$i][$j][$piece_color] = "W"){	
+			if($board[$i][$j]['piece_color'] = $piece_color){	
 				
-				print($piece_color);
+				
 				$counter = $counter +1;
 					if($counter = 3){
-					print("counter Entered");
+						
 						removepiece($x,$y,$piece_color,$input);
 					}
 			}
-
 			
+			$counter = 0;
+					
+		}
+	
+	}  
 
-
-
+	for ($i = 1; $i < 8; $i++){
+		
+		for ($j = 1; $j < 8; $j++){
+			
+			if($board[$j][$i]['piece_color'] = $piece_color){	
+				
+				
+				$counter = $counter +1;
+					if($counter = 3){
+						
+						removepiece($x,$y,$piece_color,$input);
+					}
+			}
+			
+			$counter = 0;
+					
 		}
 
-		$counter = 0;
 
-
-	}  
 
 }
 
 
-
+}
 
 ?>

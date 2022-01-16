@@ -28,6 +28,12 @@ switch ($r=array_shift($request)) {
                         break;
             case 'piece': handle_piece($method, $request[0],$request[1],$input);
                         break;
+            case 'removepiece': handle_removepiece($method, $request[0],$request[1],$request[2],$input);
+                        break;
+            case 'counterpiece': handle_counterpiece($method, $request[0]);            
+                        break;
+            case 'placepiece' : handle_placepiece();            
+                        
 	    default: header("HTTP/1.1 404 Not Found");
                             break;
 			}
@@ -47,8 +53,7 @@ function handle_board($method,$input) {
     if($method=='GET') {
             show_board($input);
     } else if ($method=='POST') {
-            reset_board();
-            show_board($input);
+            reset_board($input);
     } else {
         header('HTTP/1.1 405 Method Not Allowed');
     }
@@ -84,9 +89,34 @@ function handle_status($method) {
     } else {
         header('HTTP/1.1 405 Method Not Allowed');
     }
+
+    
 }
 
+function handle_removepiece($method , $x, $y, $piece_color, $input){
+	if($method=='PUT') {
+        removepiece($x, $y, $piece_color, $input);
+    } else {
+        header('HTTP/1.1405 Method Not Allowed');
+    }
+}
 
+function handle_counterpiece($method, $input){
+	if($method=='GET') {
+         currentpieces($input);
+    } else {
+        header('HTTP/1.1405 Method Not Allowed');
+    }
+}
+
+function handle_placepiece($method ,$x, $y,$piece_color,$input){
+	if($method=='PUT'){
+		piece_placement($x,$y,$piece_color,$input);
+	}else{
+		header("HTTP/1.1 404 Not Found");
+		print json_encode(['errormesg'=>"error"]);
+	}
+}
 
 
 
