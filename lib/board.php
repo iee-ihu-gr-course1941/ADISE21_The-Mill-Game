@@ -14,6 +14,7 @@ function show_board($input) {
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 
+	
 }
 
 
@@ -28,7 +29,6 @@ function reset_board($input) {
 function read_board() {
 	global $mysqli;
 	$sql = 'select * from board';
-	//x,y,board.piece_color from board left join players on board.piece_color=players.piece_color'
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
@@ -80,8 +80,8 @@ function move_piece($x,$y,$x2,$y2,$token) {
 		print json_encode(['errormesg'=>"You cant play there."]);
 		exit;
 	}
-	$color = current_piececolor($token, $x2, $y2);
-	if($color== 'W' || $color=='B' ) {
+	$colorOnBoard = current_piececolor($token, $x2, $y2);
+	if($colorOnBoard== 'W' || $colorOnBoard=='B' ) {
 		header("HTTP/1.1 400 Bad Request");
 		print json_encode(['errormesg'=>"You cant play there.There is a piece"]);
 		exit;
@@ -109,7 +109,7 @@ function move_piece($x,$y,$x2,$y2,$token) {
 	}
 	foreach($board[$x][$y]['moves'] as $i=>$move) {
 		if($x2==$move['x'] && $y2==$move['y']) {
-			do_move($x,$y,$x2,$y2);
+			do_move($x,$y,$x2,$y2,$color);
 			exit;
 		}
 	}
@@ -123,7 +123,7 @@ function add_valid_moves_to_piece(&$board,$b,$x,$y) {
 	$count = currentpieces($token);
 	if($board[$x][$y]['piece_color']==$b) {
 
-		if($count >= 3){
+		if($count > 3){
 		switch($x){
 				case '1': 
 					switch($y){
@@ -280,6 +280,18 @@ function move_outercrossroad($board,$b,$x,$y){
 
 function piece_placement($x,$y,$piece_color,$input){
 	global $mysqli;
+
+	
+	$sql = 'select piece_color from players where token = ? ';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('iii',$input['token']);
+	$st->execute();
+	$res = $st->get_result();
+	return($res->fetch_all(MYSQLI_ASSOC));
+	
+	$piece_color = $res[0];
+
+
 	$sql = 'update board set piece_color=? where X=? and Y=? ';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('iii',$piece_color,$x,$y);
@@ -291,9 +303,9 @@ function piece_placement($x,$y,$piece_color,$input){
 	$st3->bind_param('i',$username);
 	$st3->execute();
 	
-	$sql = 'call `piece_placement`(?,?);';
+	$sql = 'call `piece_placement`(?,?,?);';
 	$st2 = $mysqli->prepare($sql);
-	$st2->bind_param('ii',$x,$y);
+	$st2->bind_param('ii',$x,$y,$piece_color);
 	$st2->execute();
 	
 	header('Content-type: application/json');
@@ -320,11 +332,11 @@ function show_piecenumber($pic, $input){
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 }
 
-function do_move($x,$y,$x2,$y2) {
+function do_move($x,$y,$x2,$y2,$color) {
 	global $mysqli;
-	$sql = 'call `piece_movement`(?,?,?,?);';
+	$sql = 'call `piece_movement`(?,?,?,?,?);';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('iiii',$x,$y,$x2,$y2); 
+	$st->bind_param('iiii',$x,$y,$x2,$y2,$color); 
 	$st->execute();
 
 	header('Content-type: application/json');
@@ -347,7 +359,18 @@ function pawnmoves(&$board,$b,$x,$y,$m) {
 }
 
 
-function removepiece($x,$y,$piece_color,$input){
+function removepiece($x,$y,$input){
+
+
+	$piece_color = current_color($input['token']);
+
+	if( !check_triple($x,$y,$piece_color,$input) ){
+		header("HTTP/1.1 400 Bad Request");
+	print json_encode(['errormesg'=>"Cannot perform action."]); //den exei tripleta
+		exit;
+	}
+	
+
 	global $mysqli;
 	$sql = ' update board set piece_color=null where X=? and Y=? ';
 	$st = $mysqli->prepare($sql);
@@ -355,11 +378,15 @@ function removepiece($x,$y,$piece_color,$input){
 	$st->execute();
 	
 	
-	$sql = ' update players set piece_number = piece_number-1 where piece_color=?';
+	$sql = ' update players set piece_number = piece_number-1 where piece_color=if(? = `W`, `B`, `W`);'; //an den douleuei na alaksw aftakia
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('i',$piece_color);
 	$st->execute();
 	
+	if($piece_color == 'W')
+		$piece_color = 'B';
+	else
+		$piece_color ='W';
 
 	$sql = 'call `turnupdate`(?);';
 	$st = $mysqli->prepare($sql);
@@ -377,45 +404,48 @@ function check_triple($x, $y, $piece_color,$input){
 		
 		for ($j = 1; $j < 8; $j++){
 			
-			if($board[$i][$j]['piece_color'] = $piece_color){	
+			if($board[$i][$j]['piece_color'] == $piece_color){	
 				
 				
 				$counter = $counter +1;
-					if($counter = 3){
-						
-						removepiece($x,$y,$piece_color,$input);
-					}
+
 			}
 			
+			if($counter==3)
+				return TRUE;
+
 			$counter = 0;
 					
 		}
 	
 	}  
 
-	for ($i = 1; $i < 8; $i++){
+	//$counter = 0;
+
+
+	for ($j = 1; $j < 8; $j++){
 		
-		for ($j = 1; $j < 8; $j++){
+		for ($i = 1; $i < 8; $i++){
 			
-			if($board[$j][$i]['piece_color'] = $piece_color){	
+			if($board[$j][$i]['piece_color'] == $piece_color){	
 				
 				
 				$counter = $counter +1;
-					if($counter = 3){
-						
-						removepiece($x,$y,$piece_color,$input);
-					}
-			}
+
+				}
+
+				if($counter==3)
+				return TRUE;
 			
 			$counter = 0;
 					
 		}
+	} return FALSE;
+
+
+} 
 
 
 
-}
-
-
-}
 
 ?>

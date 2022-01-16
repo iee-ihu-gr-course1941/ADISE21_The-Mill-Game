@@ -161,13 +161,12 @@ DELIMITER ;
 
 
 DELIMITER	$$
-CREATE PROCEDURE piece_placement(x1 TINYINT, y1 TINYINT)
+CREATE PROCEDURE piece_placement(x1 tinyint, y1 tinyint, pcolor char)
 BEGIN
 
-select piece_color,boardslot from board where X= x1 and Y= y1 and boardslot = 1;
 UPDATE board
-SET piece_color	= piece_color
-WHERE x = x1 AND y = y1 and boardslot = 1 ;
+SET piece_color	= pcolor
+WHERE x = x1 AND y = y1;
 
 UPDATE game_status set p_turn=if(piece_color='W','B','W');
 
@@ -179,18 +178,17 @@ DELIMITER ;
 
 DELIMITER $$ 
 
-CREATE PROCEDURE piece_movement(x1 tinyint, y1 tinyint, x2 tinyint, y2 tinyint )
+CREATE PROCEDURE piece_movement(x1 tinyint, y1 tinyint, x2 tinyint, y2 tinyint,pcolor char )
 BEGIN
 
-select piece_color,boardslot from board where X= x1 and Y= y1 and boardslot = 1;
 
 UPDATE board
-set piece_color = piece_color
-where x = x2 AND y = y2 and boardslot = 1;
+SET piece_color	= pcolor
+WHERE x1 = x2 AND y1 = y2;
 
 UPDATE board
 set piece_color = null
-where x= x1 AND y = y1 and boardslot = 1;
+where x= x1 AND y = y1;
 
 UPDATE game_status set p_turn=if(piece_color='W','B','W');
 

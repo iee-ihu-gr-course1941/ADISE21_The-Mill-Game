@@ -26,16 +26,15 @@ switch ($r=array_shift($request)) {
             case '':
             case null: handle_board($method,$input);
                         break;
-            case 'piece': handle_piece($method, $request[0],$request[1],$input);
+            case 'piece': handle_piece($method, $request[0],$request[1],$request[2],$request[3],$input);
                         break;
-            case 'removepiece': handle_removepiece($method, $request[0],$request[1],$request[2],$input);
+            case 'removepiece': handle_removepiece($method, $request[0],$request[1],$input);
                         break;
             case 'counterpiece': handle_counterpiece($method, $request[0]);            
                         break;
-            case 'placepiece' : handle_placepiece($method ,$x, $y,$piece_color,$input);            
-                        
-	    default: header("HTTP/1.1 404 Not Found");
-                            break;
+              
+            default: header("HTTP/1.1 404 Not Found");
+                        break;
 			}
             break;
     case 'status':
@@ -60,15 +59,21 @@ function handle_board($method,$input) {
     
 }
 
-    function handle_piece($method, $x,$y,$input) {
-        if($method=='GET') {
-            show_piece($x,$y);
-        } else if ($method=='PUT') {
-            move_piece($x,$y,$input['x'],$input['y'],  
-                       $input['token']);
-        }    
-  
-    
+    function handle_piece($method, $x,$y,$x2,$y2,$input) {
+        if($x2==null && $y2== null)
+            if($method == 'GET')
+                show_piece($x,$y);
+            elseif($method == "PUT")
+                piece_placement($x, $y,$piece_color,$input);
+            
+            else    
+            header('HTTP/1.1 405 Method Not Allowed');
+        elseif($method == "PUT")
+            move_piece($x,$y,$x2,$y2,$input['token']);
+        else
+        
+            header('HTTP/1.1 405 Method Not Allowed');
+     
 }
 
 function handle_player($method, $p,$input) {
@@ -93,9 +98,9 @@ function handle_status($method) {
     
 }
 
-function handle_removepiece($method , $x, $y, $piece_color, $input){
-	if($method=='PUT') {
-        removepiece($x, $y, $piece_color, $input);
+function handle_removepiece($method , $x, $y, $input){
+	if($method=='POST') {
+        removepiece($x, $y, $input);
     } else {
         header('HTTP/1.1405 Method Not Allowed');
     }
@@ -109,14 +114,6 @@ function handle_counterpiece($method, $input){
     }
 }
 
-function handle_placepiece($method ,$x, $y,$piece_color,$input){
-	if($method=='PUT'){
-		piece_placement($x,$y,$piece_color,$input);
-	}else{
-		header("HTTP/1.1 404 Not Found");
-		print json_encode(['errormesg'=>"error"]);
-	}
-}
 
 
 
