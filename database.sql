@@ -160,7 +160,7 @@ DELIMITER ;
 
 
 
-DELIMITER	$$
+DELIMITER $$
 CREATE PROCEDURE piece_placement(x1 tinyint, y1 tinyint, pcolor char)
 BEGIN
 
